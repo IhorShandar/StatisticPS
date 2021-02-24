@@ -135,20 +135,23 @@ public class Controller extends Application {
 
     List<MatrixOfDeals> matrixOfDeals = new ArrayList<>();
     long numberTournament;
-    double[] sumChips = new double[169];
+    List<Double> sumChips = new ArrayList<>();
 
     private int[][] GenerationStatistic(List<String> deal, List<Integer> positionsDeals) {                             // generate statistics
         int indexColumn = 0;
         int indexRaw = 0;
         int[][] matrixOFNumberHand = new int[169][18];
-        double chipsPost, ante, oneBB = 0;
 
         for (int index1 = 0; index1 < positionsDeals.size() - 1; index1++) {
             int firstEntryName = 0;
+            double chipsPost = 0, ante = 0, oneBB = 0;
             myPositionName = null;
             myCardsInMatrix = null;
             takePartAtDeal = false;
-            chipsPost = ante = 0;
+            for (int i = 0; i < 169; i++) {
+                sumChips.add((double) 0);
+            }
+
             for (int index = positionsDeals.get(index1); index < positionsDeals.get(index1 + 1); index++) {
                 words = deal.get(index).split("\\s*(\\s|,|/|№|\\(|\\)|#|]|\\[|-|:)\\s*");
 
@@ -241,8 +244,8 @@ public class Controller extends Application {
                             indx++;
                         }
                         chipsPost = chipsPost/oneBB;
-                        sumChips[indexRaw] += chipsPost;
-                        //    System.out.println(myCardsInMatrix + " " + indexRaw + " and " + indexColumn + "; chipsWin = " + chipsPost);
+                        sumChips.set(indexRaw, sumChips.get(indexRaw) + chipsPost);
+                    //    System.out.println(myCardsInMatrix + " " + indexRaw + " and " + indexColumn + "; chipsWin = " + chipsPost);
                         firstEntryName++;
                     }
                 }
@@ -288,19 +291,25 @@ public class Controller extends Application {
 
                     if (!empty) {
                         setText(df.format(item) + "%");
-                        if (item >= 80) {
+                        if (item >= 85) {
                             setStyle("-fx-background-color: #48FF00");
                             setTextFill(Color.BROWN);
-                        }else if (item >= 60 && item < 80) {
+                        }else if (item >= 70 && item < 85) {
                             setStyle("-fx-background-color: #8AFF5C");
                             setTextFill(Color.BROWN);
-                        } else if (item >= 50 && item < 60) {
+                        } else if (item >= 60 && item < 70) {
                             setStyle("-fx-background-color: #C1FDA9");
                             setTextFill(Color.BROWN);
-                        } else if (item >= 30 && item < 50) {
+                        } else if (item >= 50 && item < 60) {
+                            setStyle("-fx-background-color: #E3FFD8");
+                            setTextFill(Color.BROWN);
+                        }else if (item >= 40 && item < 50) {
+                            setStyle("-fx-background-color: #FFC7C7");
+                            setTextFill(Color.BLACK);
+                        } else if (item >= 25 && item < 40) {
                             setStyle("-fx-background-color: #FF775A");
                             setTextFill(Color.BLACK);
-                        } else if (item >= 15 && item < 30) {
+                        } else if (item >= 15 && item < 25) {
                             setStyle("-fx-background-color: #FF461F");
                             setTextFill(Color.BLACK);
                         }else if (item > 0 && item < 15) {
@@ -404,10 +413,14 @@ public class Controller extends Application {
         namePS.setOnKeyTyped(event -> genStatistics.setDisable(false));
 
         genStatistics.setOnAction(event -> {                                                                            // initialize of button 'genStatistics'
+            matrixOfDeals.clear();
+            sumChips.clear();
+            GeneratorDataBase.textArea.clear();
+
             Alert alertAddData = new Alert(Alert.AlertType.CONFIRMATION);
             alertAddData.setTitle("Attentions!");
             alertAddData.setHeaderText("Database is ready!");
-            GeneratorDataBase.textArea.clear();
+
             JFileChooser fileopen = new JFileChooser();
             // fileopen.setMultiSelectionEnabled(true);
             fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -458,6 +471,7 @@ public class Controller extends Application {
 
                             indexHand.clear();
                         }
+
                         GeneratorDataBase.AddStatToDataBase(matrixOfDeals, namesRowInMatrix, sumChips);
                         tableStatistics.setItems(GeneratorDataBase.ViewInTable());
                     } catch (IOException | SQLException ex) {

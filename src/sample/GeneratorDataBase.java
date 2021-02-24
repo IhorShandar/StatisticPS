@@ -121,7 +121,7 @@ public class GeneratorDataBase {
         return newFiles;
     }
 
-    public static void AddStatToDataBase (List<MatrixOfDeals> matricesState, List<String> yourHand, double[] sumChips) throws SQLException {                 //create table in database and add matrix
+    public static void AddStatToDataBase (List<MatrixOfDeals> matricesState, List<String> yourHand, List<Double> sumChips) throws SQLException {                 //create table in database and add matrix
         connection = ConnectionBase.getConnection();
         statement = connection.createStatement();
         int[][] matrixState = new int[169][18];
@@ -178,7 +178,7 @@ public class GeneratorDataBase {
                                 matrixState[i][j] += matricesOfDeal.getMatrixTournament()[i][j];
                                 preparedStatement.setInt(j+1, matrixState[i][j]);
                             }
-                            preparedStatement.setDouble(19, sumChips[i]);
+                            preparedStatement.setDouble(19, sumChips.get(i));
                             preparedStatement.setInt(20, i+1);
                             preparedStatement.executeUpdate();
                         }catch (SQLException ex)
@@ -216,7 +216,7 @@ public class GeneratorDataBase {
                                 matrixState[i][j] += matricesOfDeal.getMatrixTournament()[i][j];
                                 preparedStatement.setInt(j+2, matrixState[i][j]);
                             }
-                            preparedStatement.setDouble(20, sumChips[i]);
+                            preparedStatement.setDouble(20, sumChips.get(i));
 
                             preparedStatement.executeUpdate();
                         }catch (SQLException ex)
